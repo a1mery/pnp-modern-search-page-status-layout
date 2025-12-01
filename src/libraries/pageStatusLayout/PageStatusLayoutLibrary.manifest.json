@@ -1,0 +1,9 @@
+{
+  "id": "c4a37532-bc32-4989-aa80-e78286174c82",
+  "alias": "PageStatusLayoutLibrary",
+  "componentType": "Library",
+
+  // The "*" signifies that the version should be taken from the package.json
+  "version": "*",
+  "manifestVersion": 2
+}
