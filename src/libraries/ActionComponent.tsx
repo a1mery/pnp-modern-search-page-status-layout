@@ -44,6 +44,8 @@ export interface ICustomComponentProps {
     siteUrl?: string;
     webUrl?: string;
     title?: string;
+    promotedState?: string;
+    isNews?: string;
 }
 
 export interface IPageDetails {
@@ -56,8 +58,12 @@ export interface IPageDetails {
 export interface ICustomComponentState {
     showDeleteDialog: boolean;
     showDetailsDialog: boolean;
+    showPublishDialog: boolean;
+    showPromoteDialog: boolean;
     isDeleting: boolean;
     isLoadingDetails: boolean;
+    isPublishing: boolean;
+    isPromoting: boolean;
     pageDetails: IPageDetails | null;
     error: string | null;
 }
@@ -71,23 +77,24 @@ export class CustomComponent extends React.Component<ICustomComponentProps, ICus
         this.state = {
             showDeleteDialog: false,
             showDetailsDialog: false,
+            showPublishDialog: false,
+            showPromoteDialog: false,
             isDeleting: false,
             isLoadingDetails: false,
+            isPublishing: false,
+            isPromoting: false,
             pageDetails: null,
             error: null
         };
         this.sp = spfi().using(SPFx({ pageContext: this.props.context }));
     }
 
-    private handleEditClick = (): void => {
-        try {
-            if (this.props.pageUrl) {
-                // Open page in edit mode
-                window.open(`${this.props.pageUrl}?Mode=Edit`, '_blank');
-            }
-        } catch (error) {
-            this.setState({ error: 'Failed to open page in edit mode.' });
-        }
+    private handlePublishClick = (): void => {
+        this.setState({ showPublishDialog: true });
+    }
+
+    private handlePromoteClick = (): void => {
+        this.setState({ showPromoteDialog: true });
     }
 
     private handleDeleteClick = (): void => {
@@ -201,9 +208,92 @@ export class CustomComponent extends React.Component<ICustomComponentProps, ICus
         }
     }
 
+    private confirmPublish = async (): Promise<void> => {
+        this.setState({ isPublishing: true, error: null });
+
+        try {
+            const { webUrl, itemId } = this.props;
+            
+            if (!webUrl || !itemId) {
+                throw new Error('Missing required parameters');
+            }
+
+            const web = Web([this.sp.web, webUrl]);
+            const list = web.lists.getByTitle("Site Pages");
+            
+            // Update PromotedState to 2 (Published)
+            await list.items.getById(parseInt(itemId)).update({
+                PromotedState: 2
+            });
+
+            // Close dialog and refresh page
+            this.setState({ 
+                showPublishDialog: false,
+                isPublishing: false 
+            });
+            
+            // Reload the page to reflect changes
+            window.location.reload();
+        } catch (error) {
+            console.error('Error publishing page:', error);
+            this.setState({ 
+                error: 'Failed to publish page.',
+                isPublishing: false 
+            });
+        }
+    }
+
+    private confirmPromote = async (): Promise<void> => {
+        this.setState({ isPromoting: true, error: null });
+
+        try {
+            const { webUrl, itemId } = this.props;
+            
+            if (!webUrl || !itemId) {
+                throw new Error('Missing required parameters');
+            }
+
+            const web = Web([this.sp.web, webUrl]);
+            const list = web.lists.getByTitle("Site Pages");
+            
+            // Promote page to news (PromotedState 2)
+            await list.items.getById(parseInt(itemId)).update({
+                PromotedState: 2,
+                FirstPublishedDate: new Date().toISOString()
+            });
+
+            // Close dialog and refresh page
+            this.setState({ 
+                showPromoteDialog: false,
+                isPromoting: false 
+            });
+            
+            // Reload the page to reflect changes
+            window.location.reload();
+        } catch (error) {
+            console.error('Error promoting page:', error);
+            this.setState({ 
+                error: 'Failed to promote page to news.',
+                isPromoting: false 
+            });
+        }
+    }
+
     private closeDeleteDialog = (): void => {
         if (!this.state.isDeleting) {
             this.setState({ showDeleteDialog: false, error: null });
+        }
+    }
+
+    private closePublishDialog = (): void => {
+        if (!this.state.isPublishing) {
+            this.setState({ showPublishDialog: false, error: null });
+        }
+    }
+
+    private closePromoteDialog = (): void => {
+        if (!this.state.isPromoting) {
+            this.setState({ showPromoteDialog: false, error: null });
         }
     }
 
@@ -234,21 +324,38 @@ export class CustomComponent extends React.Component<ICustomComponentProps, ICus
         const { 
             showDeleteDialog, 
             showDetailsDialog, 
+            showPublishDialog,
+            showPromoteDialog,
             isDeleting, 
             isLoadingDetails,
+            isPublishing,
+            isPromoting,
             pageDetails,
             error 
         } = this.state;
 
+        const isDraft = this.props.promotedState === '0';
+        const isNews = this.props.promotedState === '2';
+
         return (
             <div>
                 <Stack horizontal tokens={{ childrenGap: 4 }}>
-                    <IconButton
-                        iconProps={{ iconName: 'Edit' }}
-                        title="Edit"
-                        ariaLabel="Edit page"
-                        onClick={this.handleEditClick}
-                    />
+                    {isDraft && (
+                        <IconButton
+                            iconProps={{ iconName: 'PublishContent' }}
+                            title="Publish"
+                            ariaLabel="Publish page"
+                            onClick={this.handlePublishClick}
+                        />
+                    )}
+                    {!isNews && (
+                        <IconButton
+                            iconProps={{ iconName: 'Megaphone' }}
+                            title="Promote to News"
+                            ariaLabel="Promote page to news"
+                            onClick={this.handlePromoteClick}
+                        />
+                    )}
                     <IconButton
                         iconProps={{ iconName: 'Info' }}
                         title="Details"
@@ -294,6 +401,72 @@ export class CustomComponent extends React.Component<ICustomComponentProps, ICus
                         />
                     </DialogFooter>
                     {isDeleting && <Spinner label="Deleting..." size={SpinnerSize.large} />}
+                </Dialog>
+
+                {/* Publish Confirmation Dialog */}
+                <Dialog
+                    hidden={!showPublishDialog}
+                    onDismiss={this.closePublishDialog}
+                    dialogContentProps={{
+                        type: DialogType.normal,
+                        title: 'Publish Page',
+                        subText: `Are you sure you want to publish "${this.props.title || 'this page'}"? This will make the page visible to all users.`
+                    }}
+                    modalProps={{
+                        isBlocking: isPublishing
+                    }}
+                >
+                    {error && (
+                        <MessageBar messageBarType={MessageBarType.error}>
+                            {error}
+                        </MessageBar>
+                    )}
+                    <DialogFooter>
+                        <PrimaryButton 
+                            onClick={this.confirmPublish} 
+                            text="Publish" 
+                            disabled={isPublishing}
+                        />
+                        <DefaultButton 
+                            onClick={this.closePublishDialog} 
+                            text="Cancel" 
+                            disabled={isPublishing}
+                        />
+                    </DialogFooter>
+                    {isPublishing && <Spinner label="Publishing..." size={SpinnerSize.large} />}
+                </Dialog>
+
+                {/* Promote to News Confirmation Dialog */}
+                <Dialog
+                    hidden={!showPromoteDialog}
+                    onDismiss={this.closePromoteDialog}
+                    dialogContentProps={{
+                        type: DialogType.normal,
+                        title: 'Promote to News',
+                        subText: `Are you sure you want to promote "${this.props.title || 'this page'}" to news? This will feature the page as a news article.`
+                    }}
+                    modalProps={{
+                        isBlocking: isPromoting
+                    }}
+                >
+                    {error && (
+                        <MessageBar messageBarType={MessageBarType.error}>
+                            {error}
+                        </MessageBar>
+                    )}
+                    <DialogFooter>
+                        <PrimaryButton 
+                            onClick={this.confirmPromote} 
+                            text="Promote" 
+                            disabled={isPromoting}
+                        />
+                        <DefaultButton 
+                            onClick={this.closePromoteDialog} 
+                            text="Cancel" 
+                            disabled={isPromoting}
+                        />
+                    </DialogFooter>
+                    {isPromoting && <Spinner label="Promoting..." size={SpinnerSize.large} />}
                 </Dialog>
 
                 {/* Details Dialog */}
