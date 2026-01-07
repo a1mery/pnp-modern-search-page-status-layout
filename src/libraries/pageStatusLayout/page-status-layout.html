@@ -53,6 +53,26 @@
             background-color: #0078d4;
         }
 
+        .page-type-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .type-news {
+            background-color: #107c10;
+        }
+
+        .type-page {
+            background-color: #605e5c;
+        }
+
         .page-card-content {
             padding: 16px;
         }
@@ -88,10 +108,10 @@
         <div class="page-card">
             <div class="page-card-image-container">
                 <img src="{{item.PictureThumbnailURL}}" alt="{{item.Title}}" class="page-card-image">
-                {{#if (eq item.PromotedState 0)}}
-                <div class="page-status-indicator status-draft">Draft</div>
-                {{else if (eq item.PromotedState 1)}}
-                <div class="page-status-indicator status-scheduled">Scheduled</div>
+                {{#if (eq item.PromotedState '2')}}
+                <div class="page-type-badge type-news">News</div>
+                {{else}}
+                <div class="page-type-badge type-page">Page</div>
                 {{/if}}
             </div>
             <div class="page-card-content">
