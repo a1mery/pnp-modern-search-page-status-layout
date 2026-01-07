@@ -125,7 +125,7 @@ export class CustomComponent extends React.Component<ICustomComponentProps, ICus
             
             // Get the page item
             const item = await list.items.getById(parseInt(itemId))
-                .select("ViewsLifeTime", "ViewsRecent", "Modified")();
+                .select("Modified")();
 
             // Get like information
             let likeCount = 0;

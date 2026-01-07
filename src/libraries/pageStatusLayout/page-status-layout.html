@@ -53,10 +53,16 @@
             background-color: #0078d4;
         }
 
-        .page-type-badge {
+        .badge-container {
             position: absolute;
             top: 10px;
             left: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .page-type-badge {
             padding: 4px 12px;
             border-radius: 4px;
             font-size: 12px;
@@ -70,6 +76,14 @@
         }
 
         .type-page {
+            background-color: #605e5c;
+        }
+
+        .badge-second {
+            background-color: #605e5c;
+        }
+
+        .badge-third {
             background-color: #605e5c;
         }
 
@@ -108,11 +122,19 @@
         <div class="page-card">
             <div class="page-card-image-container">
                 <img src="{{item.PictureThumbnailURL}}" alt="{{item.Title}}" class="page-card-image">
-                {{#if (eq item.PromotedState '2')}}
-                <div class="page-type-badge type-news">News</div>
-                {{else}}
-                <div class="page-type-badge type-page">Page</div>
-                {{/if}}
+                <div class="badge-container">
+                    {{#if (eq item.PromotedState '2')}}
+                    <div class="page-type-badge type-news">News</div>
+                    {{else}}
+                    <div class="page-type-badge type-page">Page</div>
+                    {{/if}}
+                    {{#if (slot item @root.slots.SecondBadge)}}
+                    <div class="page-type-badge badge-second">{{slot item @root.slots.SecondBadge}}</div>
+                    {{/if}}
+                    {{#if (slot item @root.slots.ThirdBadge)}}
+                    <div class="page-type-badge badge-third">{{slot item @root.slots.ThirdBadge}}</div>
+                    {{/if}}
+                </div>
             </div>
             <div class="page-card-content">
                 <h3 class="page-card-title">
