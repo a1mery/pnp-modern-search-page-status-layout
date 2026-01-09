@@ -1,0 +1,210 @@
+<content id="template">
+    <style>
+        .page-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .page-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .page-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .page-card-image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .page-card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .page-status-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .status-draft {
+            background-color: #d13438;
+        }
+
+        .status-scheduled {
+            background-color: #0078d4;
+        }
+
+        .badge-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .page-type-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .type-news {
+            background-color: #107c10;
+        }
+
+        .type-page {
+            background-color: #605e5c;
+        }
+
+        .badge-second {
+            background-color: #605e5c;
+        }
+
+        .badge-third {
+            background-color: #605e5c;
+        }
+
+        .page-card-content {
+            padding: 16px;
+        }
+
+        .page-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 12px;
+            color: #323130;
+        }
+
+        .page-card-title a {
+            color: #0078d4;
+            text-decoration: none;
+        }
+
+        .page-card-title a:hover {
+            text-decoration: underline;
+        }
+
+        .page-card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #edebe9;
+        }
+    </style>
+
+    <div class="page-status-grid">
+        {{#each data.items as |item|}}
+        <div class="page-card">
+            <div class="page-card-image-container">
+                <img src="{{item.PictureThumbnailURL}}" alt="{{item.Title}}" class="page-card-image">
+                <div class="badge-container">
+                    {{#if (eq item.PromotedState '2')}}
+                    <div class="page-type-badge type-news">News</div>
+                    {{else}}
+                    <div class="page-type-badge type-page">Page</div>
+                    {{/if}}
+                    {{#if (slot item @root.slots.SecondBadge)}}
+                    <div class="page-type-badge badge-second">{{slot item @root.slots.SecondBadge}}</div>
+                    {{/if}}
+                    {{#if (slot item @root.slots.ThirdBadge)}}
+                    <div class="page-type-badge badge-third">{{slot item @root.slots.ThirdBadge}}</div>
+                    {{/if}}
+                </div>
+            </div>
+            <div class="page-card-content">
+                <h3 class="page-card-title">
+                    <a href="{{item.Path}}" target="_blank">{{item.Title}}</a>
+                </h3>
+                <div class="page-card-actions">
+                    <action-component 
+                        data-item-id="{{item.ListItemID}}" 
+                        data-page-url="{{item.Path}}"
+                        data-site-url="{{item.SPSiteUrl}}"
+                        data-web-url="{{item.SPWebUrl}}"
+                        data-title="{{item.Title}}"
+                        data-promoted-state="{{item.PromotedState}}">
+                    </action-component>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+
+    {{#if @root.properties.paging.showPaging}}
+    {{#gt @root.data.totalItemsCount @root.properties.paging.itemsCountPerPage}}
+    <pnp-pagination 
+        data-total-items="{{@root.data.totalItemsCount}}"
+        data-hide-first-last-pages="{{@root.properties.paging.hideFirstLastPages}}"
+        data-hide-disabled="{{@root.properties.paging.hideDisabled}}"
+        data-hide-navigation="{{@root.properties.paging.hideNavigation}}" 
+        data-range="{{@root.properties.paging.pagingRange}}"
+        data-items-count-per-page="{{@root.properties.paging.itemsCountPerPage}}"
+        data-current-page-number="{{@root.paging.currentPageNumber}}" 
+        data-theme-variant="{{JSONstringify @root.theme}}">
+    </pnp-pagination>
+    {{/gt}}
+    {{/if}}
+</content>
+
+<content id="placeholder">
+    <style>
+        .placeholder-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+            color: #605e5c;
+        }
+
+        .placeholder-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .placeholder-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .placeholder-subtext {
+            font-size: 14px;
+            color: #8a8886;
+        }
+    </style>
+
+    <div class="placeholder-container">
+        <div class="placeholder-icon">📄</div>
+        <div class="placeholder-text">No pages found</div>
+        <div class="placeholder-subtext">Try adjusting your search criteria</div>
+    </div>
+</content>
+

@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.14.0",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "pnp-modern-search-page-status-layout",
+    "libraryId": "5019324b-00e3-4851-8fe4-a4f26b324fdc",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "pnp-modern-search-page-status-layout",
+    "solutionShortDescription": "pnp-modern-search-page-status-layout description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "library"
+  }
+}
