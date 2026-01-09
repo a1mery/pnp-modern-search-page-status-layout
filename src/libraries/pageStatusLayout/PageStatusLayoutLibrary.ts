@@ -32,12 +32,12 @@ constructor(serviceScope: ServiceScope) {
   getCustomLayouts(): ILayoutDefinition[] {
     return [
       {
-        name: 'Page Status Layout',
-        iconName: 'Page',
-        key: 'PageStatusLayout',
+        name: 'Manage pages',
+        iconName: 'DocumentManagement',
+        key: 'ManagePagesLayout',
         type: LayoutType.Results,
         renderType: LayoutRenderType.Handlebars,
-        templateContent: require('./page-status-layout.html').default.toString(),
+        templateContent: require('./manage-pages-layout.html').default.toString(),
         serviceKey: ServiceKey.create<PageStatusLayout>('PageStatusLayout', PageStatusLayout)
       }
     ];

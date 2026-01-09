@@ -139,6 +139,39 @@ export class CustomComponent extends React.Component<ICustomComponentProps, ICus
                 console.warn('Could not retrieve like information:', error);
             }
 
+            // Get view count
+            const host = new URL(webUrl).hostname;
+            
+            // Get site and web IDs from the target web
+            const siteResponse = await fetch(`${webUrl}/_api/site?$select=Id`, {
+                headers: { accept: "application/json;odata=nometadata" },
+                credentials: "same-origin"
+            });
+            const siteData = await siteResponse.json();
+            const siteId = siteData.Id;
+            
+            const webResponse = await fetch(`${webUrl}/_api/web?$select=Id`, {
+                headers: { accept: "application/json;odata=nometadata" },
+                credentials: "same-origin"
+            });
+            const webData = await webResponse.json();
+            const webId = webData.Id;
+            
+            const listId = await list.select("Id")().then(l => l.Id);
+            
+            const url = `https://${host}/_api/v2.1/sites/${host},${siteId},${webId}/lists/${listId}/items/${itemId}/driveItem?$select=id,analytics&$expand=analytics($expand=allTime)`;
+
+            const res = await fetch(url, {
+                method: "GET",
+                headers: { accept: "application/json;odata=nometadata" },
+                credentials: "same-origin"
+            });
+
+            if (!res.ok) throw new Error('message');
+            const json = await res.json();
+            const views = Number(json?.analytics?.allTime?.access?.actionCount ?? 0);
+
+
             // Get comment count
             let commentCount = 0;
             try {
@@ -152,7 +185,7 @@ export class CustomComponent extends React.Component<ICustomComponentProps, ICus
             }
 
             const pageDetails: IPageDetails = {
-                viewCount: item.ViewsLifeTime || 0,
+                viewCount: views,
                 likeCount: likeCount,
                 commentCount: commentCount,
                 lastModifiedDate: item.Modified
@@ -204,20 +237,21 @@ export class CustomComponent extends React.Component<ICustomComponentProps, ICus
         this.setState({ isPromoting: true, error: null });
 
         try {
-            const { webUrl, itemId } = this.props;
+            const { webUrl, pageUrl } = this.props;
             
-            if (!webUrl || !itemId) {
+            if (!webUrl || !pageUrl) {
                 throw new Error('Missing required parameters');
             }
 
             const web = Web([this.sp.web, webUrl]);
-            const list = web.lists.getByTitle("Site Pages");
             
-            // Promote page to news (PromotedState 2)
-            await list.items.getById(parseInt(itemId)).update({
-                PromotedState: '2',
-                FirstPublishedDate: new Date().toISOString()
-            });
+            // Get the page file path from the URL
+            const url = new URL(pageUrl);
+            const pagePath = url.pathname;
+            
+            // Load the page and promote to news
+            const page = await web.loadClientsidePage(pagePath);
+            await page.promoteToNews();
 
             // Close dialog and refresh page
             this.setState({ 
