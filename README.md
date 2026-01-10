@@ -1,4 +1,4 @@
-# PnP Modern Search - Like component
+# PnP Modern Search - Page Status Layout
 
 ## Summary
 
@@ -60,3 +60,4 @@ This layout renders SharePoint pages and news with a custom web component to del
 - [Microsoft 365 Patterns and Practices](https://aka.ms/m365pnp) - Guidance, tooling, samples and open-source controls for your Microsoft 365 development
 - [PnP Modern Search (v4) - Extensibility possibilities](https://microsoft-search.github.io/pnp-modern-search/extensibility/)
 - [PnP/PnPjs](https://pnp.github.io/pnpjs/)
+
