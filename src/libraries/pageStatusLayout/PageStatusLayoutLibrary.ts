@@ -11,20 +11,32 @@ import {
   BaseLayout
 } from "@pnp/modern-search-extensibility";
 import { PropertyPaneCheckbox } from "@microsoft/sp-property-pane";
+import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/spfx-property-controls/lib/PropertyFieldColorPicker';
 import { ActionWebComponent } from "../ActionComponent";
 import { ServiceKey, ServiceScope } from "@microsoft/sp-core-library";
 
 
 export interface IPageStatusLayoutProperties {
   showDeleteButton: boolean;
+  showPromoteButton: boolean;
+  newsBadgeColor: string;
+  pageBadgeColor: string;
 }
 
 export class PageStatusLayout extends BaseLayout<IPageStatusLayoutProperties> {
 
   public onInit(): void {
-    // Default to showing the delete button when property is not yet set
     if (this.properties.showDeleteButton === undefined) {
       this.properties.showDeleteButton = true;
+    }
+    if (this.properties.showPromoteButton === undefined) {
+      this.properties.showPromoteButton = true;
+    }
+    if (!this.properties.newsBadgeColor) {
+      this.properties.newsBadgeColor = '#107c10';
+    }
+    if (!this.properties.pageBadgeColor) {
+      this.properties.pageBadgeColor = '#605e5c';
     }
   }
 
@@ -33,6 +45,28 @@ export class PageStatusLayout extends BaseLayout<IPageStatusLayoutProperties> {
       PropertyPaneCheckbox('layoutProperties.showDeleteButton', {
         text: 'Show delete button',
         checked: true
+      }),
+      PropertyPaneCheckbox('layoutProperties.showPromoteButton', {
+        text: 'Show promote button',
+        checked: true
+      }),
+      PropertyFieldColorPicker('layoutProperties.newsBadgeColor', {
+        label: 'News badge color',
+        selectedColor: this.properties.newsBadgeColor,
+        onPropertyChange: this.onPropertyUpdate.bind(this),
+        properties: { layoutProperties: this.properties },
+        style: PropertyFieldColorPickerStyle.Inline,
+        alphaSliderHidden: true,
+        key: 'newsBadgeColorField'
+      }),
+      PropertyFieldColorPicker('layoutProperties.pageBadgeColor', {
+        label: 'Page badge color',
+        selectedColor: this.properties.pageBadgeColor,
+        onPropertyChange: this.onPropertyUpdate.bind(this),
+        properties: { layoutProperties: this.properties },
+        style: PropertyFieldColorPickerStyle.Inline,
+        alphaSliderHidden: true,
+        key: 'pageBadgeColorField'
       })
     ];
   }

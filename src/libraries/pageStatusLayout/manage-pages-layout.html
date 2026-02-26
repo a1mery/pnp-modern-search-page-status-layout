@@ -72,11 +72,11 @@
         }
 
         .type-news {
-            background-color: #107c10;
+            background-color: var(--news-badge-color, #107c10);
         }
 
         .type-page {
-            background-color: #605e5c;
+            background-color: var(--page-badge-color, #605e5c);
         }
 
         .badge-second {
@@ -117,6 +117,13 @@
         }
     </style>
 
+    <style>
+        .page-status-grid {
+            --news-badge-color: {{#if @root.properties.layoutProperties.newsBadgeColor}}{{@root.properties.layoutProperties.newsBadgeColor}}{{else}}#107c10{{/if}};
+            --page-badge-color: {{#if @root.properties.layoutProperties.pageBadgeColor}}{{@root.properties.layoutProperties.pageBadgeColor}}{{else}}#605e5c{{/if}};
+        }
+    </style>
+
     <div class="page-status-grid">
         {{#each data.items as |item|}}
         <div class="page-card">
@@ -148,7 +155,8 @@
                         data-web-url="{{item.SPWebUrl}}"
                         data-title="{{item.Title}}"
                         data-promoted-state="{{item.PromotedState}}"
-                        data-show-delete-button="{{@root.properties.layoutProperties.showDeleteButton}}">
+                        data-show-delete-button="{{@root.properties.layoutProperties.showDeleteButton}}"
+                        data-show-promote-button="{{@root.properties.layoutProperties.showPromoteButton}}">
                     </action-component>
                 </div>
             </div>

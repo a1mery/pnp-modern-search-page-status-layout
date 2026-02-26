@@ -47,6 +47,7 @@ export interface ICustomComponentProps {
     promotedState?: string;
     isNews?: string;
     showDeleteButton?: string;
+    showPromoteButton?: string;
 }
 
 export interface IPageDetails {
@@ -320,11 +321,12 @@ export class CustomComponent extends React.Component<ICustomComponentProps, ICus
 
         const isNews = this.props.promotedState?.toString() === '2';
         const showDelete = this.props.showDeleteButton?.toString().toLowerCase() !== 'false';
+        const showPromote = this.props.showPromoteButton?.toString().toLowerCase() !== 'false';
 
         return (
             <div>
                 <Stack horizontal tokens={{ childrenGap: 4 }}>
-                    {!isNews && (
+                    {!isNews && showPromote && (
                         <IconButton
                             iconProps={{ iconName: 'Megaphone' }}
                             title="Promote to News"
