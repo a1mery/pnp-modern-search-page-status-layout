@@ -46,6 +46,7 @@ export interface ICustomComponentProps {
     title?: string;
     promotedState?: string;
     isNews?: string;
+    showDeleteButton?: string;
 }
 
 export interface IPageDetails {
@@ -318,6 +319,7 @@ export class CustomComponent extends React.Component<ICustomComponentProps, ICus
         } = this.state;
 
         const isNews = this.props.promotedState?.toString() === '2';
+        const showDelete = this.props.showDeleteButton?.toString().toLowerCase() !== 'false';
 
         return (
             <div>
@@ -336,12 +338,14 @@ export class CustomComponent extends React.Component<ICustomComponentProps, ICus
                         ariaLabel="View page details"
                         onClick={this.handleDetailsClick}
                     />
-                    <IconButton
-                        iconProps={{ iconName: 'Delete' }}
-                        title="Delete"
-                        ariaLabel="Delete page"
-                        onClick={this.handleDeleteClick}
-                    />
+                    {showDelete && (
+                        <IconButton
+                            iconProps={{ iconName: 'Delete' }}
+                            title="Delete"
+                            ariaLabel="Delete page"
+                            onClick={this.handleDeleteClick}
+                        />
+                    )}
                 </Stack>
 
                 {/* Delete Confirmation Dialog */}

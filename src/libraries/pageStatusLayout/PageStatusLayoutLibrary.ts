@@ -10,14 +10,32 @@ import {
   LayoutRenderType,
   BaseLayout
 } from "@pnp/modern-search-extensibility";
+import { PropertyPaneCheckbox } from "@microsoft/sp-property-pane";
 import { ActionWebComponent } from "../ActionComponent";
 import { ServiceKey, ServiceScope } from "@microsoft/sp-core-library";
 
 
 export interface IPageStatusLayoutProperties {
+  showDeleteButton: boolean;
 }
 
 export class PageStatusLayout extends BaseLayout<IPageStatusLayoutProperties> {
+
+  public onInit(): void {
+    // Default to showing the delete button when property is not yet set
+    if (this.properties.showDeleteButton === undefined) {
+      this.properties.showDeleteButton = true;
+    }
+  }
+
+  public getPropertyPaneFieldsConfiguration(): import("@microsoft/sp-property-pane").IPropertyPaneField<any>[] {
+    return [
+      PropertyPaneCheckbox('layoutProperties.showDeleteButton', {
+        text: 'Show delete button',
+        checked: true
+      })
+    ];
+  }
 }
 
 
