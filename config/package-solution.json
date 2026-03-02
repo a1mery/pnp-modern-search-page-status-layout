@@ -3,7 +3,7 @@
   "solution": {
     "name": "pnp-modern-search-page-status-layout-client-side-solution",
     "id": "5019324b-00e3-4851-8fe4-a4f26b324fdc",
-    "version": "1.0.0.0",
+    "version": "1.1.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,

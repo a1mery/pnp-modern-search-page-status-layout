@@ -72,11 +72,11 @@
         }
 
         .type-news {
-            background-color: var(--news-badge-color, #107c10);
+            background-color: #107c10;
         }
 
         .type-page {
-            background-color: var(--page-badge-color, #605e5c);
+            background-color: #605e5c;
         }
 
         .badge-second {
@@ -117,13 +117,6 @@
         }
     </style>
 
-    <style>
-        .page-status-grid {
-            --news-badge-color: {{#if @root.properties.layoutProperties.newsBadgeColor}}{{@root.properties.layoutProperties.newsBadgeColor}}{{else}}#107c10{{/if}};
-            --page-badge-color: {{#if @root.properties.layoutProperties.pageBadgeColor}}{{@root.properties.layoutProperties.pageBadgeColor}}{{else}}#605e5c{{/if}};
-        }
-    </style>
-
     <div class="page-status-grid">
         {{#each data.items as |item|}}
         <div class="page-card">
@@ -131,9 +124,17 @@
                 <img src="{{item.PictureThumbnailURL}}" alt="{{item.Title}}" class="page-card-image">
                 <div class="badge-container">
                     {{#if (eq item.PromotedState '2')}}
-                    <div class="page-type-badge type-news">News</div>
+                    <badge-component
+                        data-label="News"
+                        data-color="{{#if @root.properties.layoutProperties.newsBadgeColor}}{{@root.properties.layoutProperties.newsBadgeColor}}{{else}}#107c10{{/if}}"
+                        data-badge-class="type-news">
+                    </badge-component>
                     {{else}}
-                    <div class="page-type-badge type-page">Page</div>
+                    <badge-component
+                        data-label="Page"
+                        data-color="{{#if @root.properties.layoutProperties.pageBadgeColor}}{{@root.properties.layoutProperties.pageBadgeColor}}{{else}}#605e5c{{/if}}"
+                        data-badge-class="type-page">
+                    </badge-component>
                     {{/if}}
                     {{#if (slot item @root.slots.SecondBadge)}}
                     <div class="page-type-badge badge-second">{{slot item @root.slots.SecondBadge}}</div>

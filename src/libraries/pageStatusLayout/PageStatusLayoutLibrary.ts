@@ -13,6 +13,7 @@ import {
 import { PropertyPaneCheckbox } from "@microsoft/sp-property-pane";
 import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/spfx-property-controls/lib/PropertyFieldColorPicker';
 import { ActionWebComponent } from "../ActionComponent";
+import { BadgeWebComponent } from "../BadgeComponent";
 import { ServiceKey, ServiceScope } from "@microsoft/sp-core-library";
 
 
@@ -99,6 +100,10 @@ constructor(serviceScope: ServiceScope) {
       {
         componentName: 'action-component',
         componentClass: ActionWebComponent
+      },
+      {
+        componentName: 'badge-component',
+        componentClass: BadgeWebComponent
       }
     ];
   }
